@@ -8,7 +8,7 @@ import (
 
 	"fmt"
 
-	"github.com/QuentinPerez/go-encodeUrl"
+	encurl "github.com/QuentinPerez/go-encodeUrl"
 )
 
 // UsageConfig usage request
@@ -821,6 +821,47 @@ func (api *API) UpdateQuota(conf QuotaConfig) error {
 	}
 	values.Add("format", "json")
 	_, _, err := api.call("PUT", "/user", values, true, "quota")
+	return err
+}
+
+// QuotaBucketConfig quota request
+type QuotaBucketConfig struct {
+	UID        string `url:"uid,ifStringIsNotEmpty"`         // The user to specify a quota
+	MaxObjects string `url:"max-objects,ifStringIsNotEmpty"` // The max-objects setting allows you to specify the maximum number of objects. A negative value disables this setting.
+	MaxSizeKB  string `url:"max-size-kb,ifStringIsNotEmpty"` // The max-size-kb option allows you to specify a quota for the maximum number of bytes. A negative value disables this setting
+	Enabled    string `url:"enabled,ifStringIsNotEmpty"`     // The enabled option enables the quotas
+	QuotaType  string `url:"quota-type,ifStringIsNotEmpty"`  // The quota-type option sets the scope for the quota. The options is bucket .
+	Bucket     string `url:"bucket,ifStringIsNotEmpty"`      // The bucket option is bucket-name
+}
+
+// UpdateQuota update  bucket quota
+//
+// !! caps:	users=write !!
+//
+//@UID
+//@Quota [bucket]
+//
+func (api *API) UpdateBucketQuota(conf QuotaBucketConfig) error {
+	var (
+		values = url.Values{}
+		errs   []error
+	)
+
+	if conf.UID == "" {
+		return errors.New("UID field is required")
+	}
+	if conf.QuotaType == "" {
+		return errors.New("QuotaType field is required")
+	}
+	if conf.QuotaType != "bucket" {
+		return errors.New("QuotaType field must be bucket")
+	}
+	values, errs = encurl.Translate(conf)
+	if len(errs) > 0 {
+		return errs[0]
+	}
+	values.Add("format", "json")
+	_, _, err := api.call("PUT", "/bucket", values, true, "quota")
 	return err
 }
 
