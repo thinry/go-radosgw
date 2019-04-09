@@ -115,6 +115,9 @@ func (api *API) GetQuotas(conf QuotaConfig) (*Quotas, error) {}
 // UpdateQuota updates user's quotas
 func (api *API) UpdateQuota(conf QuotaConfig) error {}
 
+// UpdateSpecifiedBucketQuota updates bucket's quotas 
+func (api *API) UpdateSpecifiedBucketQuota(conf QuotaSpecifiedConfig) error {}
+
 // AddCapability returns user's quotas
 func (api *API) AddCapability(conf CapConfig) ([]Capability, error) {}
 
