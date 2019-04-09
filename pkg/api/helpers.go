@@ -824,8 +824,8 @@ func (api *API) UpdateQuota(conf QuotaConfig) error {
 	return err
 }
 
-// QuotaBucketConfig quota request
-type QuotaBucketConfig struct {
+// QuotaSpecifiedBucketConfig quota request
+type QuotaSpecifiedBucketConfig struct {
 	UID        string `url:"uid,ifStringIsNotEmpty"`         // The user to specify a quota
 	MaxObjects string `url:"max-objects,ifStringIsNotEmpty"` // The max-objects setting allows you to specify the maximum number of objects. A negative value disables this setting.
 	MaxSizeKB  string `url:"max-size-kb,ifStringIsNotEmpty"` // The max-size-kb option allows you to specify a quota for the maximum number of bytes. A negative value disables this setting
@@ -834,14 +834,15 @@ type QuotaBucketConfig struct {
 	Bucket     string `url:"bucket,ifStringIsNotEmpty"`      // The bucket option is bucket-name
 }
 
-// UpdateQuota update  bucket quota
+// UpdateSpecifiedBucketQuota update bucket quota
 //
 // !! caps:	users=write !!
 //
 //@UID
 //@Quota [bucket]
+//@Bucket
 //
-func (api *API) UpdateBucketQuota(conf QuotaBucketConfig) error {
+func (api *API) UpdateSpecifiedBucketQuota(conf QuotaSpecifiedBucketConfig) error {
 	var (
 		values = url.Values{}
 		errs   []error
@@ -849,6 +850,9 @@ func (api *API) UpdateBucketQuota(conf QuotaBucketConfig) error {
 
 	if conf.UID == "" {
 		return errors.New("UID field is required")
+	}
+	if conf.Bucket == "" {
+		return errors.New("Bucket field is required")
 	}
 	if conf.QuotaType == "" {
 		return errors.New("QuotaType field is required")
